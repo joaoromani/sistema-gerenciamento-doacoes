@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Sistema de Doações</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Sistema de Doações</h1>
+        
+        <form id="formDoacao">
+            <label for="tipo">Tipo de Doação:</label>
+            <input type="text" id="tipo" name="tipo" required><br>
+            
+            <label for="valor">Valor:</label>
+            <input type="number" id="valor" name="valor" required><br>
+            
+            <label for="data">Data:</label>
+            <input type="date" id="data" name="data" required><br>
+            
+            <label for="metodoPagamento">Método de Pagamento:</label>
+            <select id="metodoPagamento" name="metodoPagamento" required>
+                <option value="pix">PIX</option>
+                <option value="cartao">Cartão de Crédito/Débito</option>
+                <option value="boleto">Boleto Bancário</option>
+            </select><br>
+            
+            <div id="pixFields" style="display: none;">
+                <label for="chavePix">Chave PIX:</label>
+                <input type="text" id="chavePix" name="chavePix"><br>
+            </div>
+            
+            <div id="cartaoFields" style="display: none;">
+                <label for="numeroCartao">Número do Cartão:</label>
+                <input type="text" id="numeroCartao" name="numeroCartao"><br>
+                
+                <label for="dataValidade">Data de Validade:</label>
+                <input type="text" id="dataValidade" name="dataValidade"><br>
+                
+                <label for="cvv">CVV:</label>
+                <input type="text" id="cvv" name="cvv"><br>
+            </div>
+            
+            <button type="submit">Doar</button>
+        </form>
+        
+        <div id="totalDoacoes">
+            Total de Doações: R$ <span id="total"></span>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById("metodoPagamento").addEventListener("change", function() {
+            var metodo = this.value;
+            
+            if (metodo === "pix") {
+                document.getElementById("pixFields").style.display = "block";
+                document.getElementById("cartaoFields").style.display = "none";
+            } else if (metodo === "cartao") {
+                document.getElementById("pixFields").style.display = "none";
+                document.getElementById("cartaoFields").style.display = "block";
+            } else if (metodo === "boleto") {
+                document.getElementById("pixFields").style.display = "none";
+                document.getElementById("cartaoFields").style.display = "none";
+            }
+        });
+        
+        document.getElementById("formDoacao").addEventListener("submit", function(event) {
+            event.preventDefault();
+            
+            var tipo = document.getElementById("tipo").value;
+            var valor = document.getElementById("valor").value;
+            var data = document.getElementById("data").value;
+            var metodo = document.getElementById("metodoPagamento").value;
+            
+            var payload = { tipo: tipo, valor: parseFloat(valor), data: data };
+            
+            if (metodo === "pix") {
+                payload.metodo = "PIX";
+                payload.chavePix = document.getElementById("chavePix").value;
+            } else if (metodo === "cartao") {
+                payload.metodo = "Cartão de Crédito/Débito";
+                payload.numeroCartao = document.getElementById("numeroCartao").value;
+                payload.dataValidade = document.getElementById("dataValidade").value;
+                payload.cvv = document.getElementById("cvv").value;
+            } else if (metodo === "boleto") {
+                payload.metodo = "Boleto Bancário";
+            }
+            
+            // Simulação de envio para o backend (exibir no console)
+            console.log('Dados da Doação:', payload);
+            // Atualizar total de doações (simulação)
+            atualizarTotalDoacoes(parseFloat(valor));
+        });
+        
+        function atualizarTotalDoacoes(valorDoacao) {
+            var totalAtual = parseFloat(document.getElementById('total').textContent);
+            var novoTotal = totalAtual + valorDoacao;
+            document.getElementById('total').textContent = novoTotal.toFixed(2);
+        }
+    </script>
+</body>
+</html>
